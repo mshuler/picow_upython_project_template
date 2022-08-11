@@ -1,0 +1,91 @@
+    <!DOCTYPE html>
+	<html>
+	<head>
+	<link rel="stylesheet" type="text/css" href="thestyle.css">
+	<script src="zepto.min.js"></script>
+	</head>
+	<body>
+	 <div class="container">
+	  <div class="hero">
+
+			<div class="row form">
+				<fieldset class="col c9">
+				<legend><h1>Setup WiFi</h1></legend>
+
+			      <div class="form-control">
+			        <form action="/setup_wifi" method="POST">
+							<div class="form-control">
+							  <label for="mode">Mode:</label>
+							  <select name="mode" id="mode">
+							    <option value="STA">Connect To Wifi Network (STA)</option>
+							    <option value="AP">Create Wifi Network (AP)</option>
+							  </select>			        
+							</div>  
+					      <div class="form-control">
+					        <label for="ssid">WiFi SSID:</label>
+					        <!-- text field does not apply size in chrome not sure why -->
+					        <input type="search" class="smooth" id="ssid" name="ssid" size="40" placeholder="Type WiFi SSID/Network...">
+					      </div>
+		
+					      <div class="form-control">
+					        <label for="pass">WiFi Password:</label>
+					        <input type="password" class="smooth" id="pass" name="pass" size="40" placeholder="Type WiFi password...">
+					      </div>
+					      <div class="form-control">
+					         <label ></label>
+								<input type="checkbox" id="showPassCB" value="">Show Password
+					      </div>
+		               <input type="submit" value="Save WiFi settings" class="btn btn-sm btn-b">
+                 </form>
+               </div>
+				</fieldset>
+				</form>
+
+			<fieldset class="col c9">
+			    <legend><h1>WiFi Networks</h1></legend>
+					    <div class="row form">
+
+						  <div>
+							<div class="row form">
+							<label>RSSI (dBm)</label>
+						   <input type="text" id=rssiField value="" size="5" readonly>
+						   </div>
+							<div class="row form">
+							<label>Channel</label>
+						   <input type="text" id=channelField value="" readonly>
+						   </div>
+						  </div>
+				      </div>
+
+					  <input type="hidden" id="swifinetworks" value="$WIFINETWORKS">
+  
+						<div>
+                    <div class="row form">
+                      <label>Detected Networks</label>
+                      <select name="WiFi Networks" id="wifinetworks" size="1" >
+                      </select>
+                    </div>
+				      </div>
+
+				  </div>
+			</fieldset>
+
+	      </div>
+	</div>
+
+
+
+
+	</div>
+
+	<div class="container">
+	    <div class="hero">
+	      <!-- <h3>Result:</h3> -->
+	      <div id="result"></div>
+	    </div>
+	</div>
+
+	<script src="setup.js"></script>
+
+	</body>
+	</html>
