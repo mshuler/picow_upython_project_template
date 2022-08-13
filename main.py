@@ -1,4 +1,3 @@
-from   machine import Pin
 import uasyncio as asyncio
 
 from uo import UO
@@ -18,7 +17,7 @@ async def main():
 
     # Init the WiFi interface
     wifi = WiFi(uo, WIFI_SETUP_BUTTON_PIN)
-    wlan = wifi.setup()
+    wifi.setup()
 
     # start TCP web server using uasyncio
     # This can be customised for your project by changing the files in /webroot
