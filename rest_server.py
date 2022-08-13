@@ -23,6 +23,7 @@ class RestServer(UOBase):
     CPU_FREQ = "/cpu_freq"                                   # The text in the http get request to set/get the CPU frequency.
     SETUP_UART = "/setup_uart"                               # The text in the HTTP request when setting up a UART.
     UART_TX = "/uart_tx"                                     # The text in the HTTP request when sending data out of a uart port.
+    UART_RX = "/uart_rx"                                     # The text in the HTTP request when reading data from a uart port.
 
     def __init__(self, uo=None):
         """@brief Constructor
@@ -86,6 +87,9 @@ class RestServer(UOBase):
 
             elif cmd == RestServer.UART_TX:
                 response = self._uart_tx(args_dict)
+
+            elif cmd == RestServer.UART_RX:
+                response = self._uart_rx(args_dict)
 
         # Send the HTTP OK header detailing JSON text to follow.
         self._ok_json_response(writer)
@@ -370,8 +374,8 @@ class RestServer(UOBase):
         return response
 
     def _uart_tx(self, args_dict):
-        """@brief Setup a UART.
-                   To setup a uart (8 data bits, 1 parity, 1 stop) (sends carridge return, line feed at the end of the text)
+        """@brief TX data on a UART.
+                   Send Hello World followed by carridge return, line feed
                         http://192.168.0.24:8080/uart_tx?uart=0?tx_data=Hello%20World%d%a
 
                   self._setup_uart() must be called prior to calling this method.
@@ -406,6 +410,38 @@ class RestServer(UOBase):
         response = json.dumps(response_dict)
         return response
 
+    def _uart_rx(self, args_dict):
+        """@brief Read data from a UART.
+                   To read any data available on the UART
+                        http://192.168.0.24:8080/uart_rx?uart=0
+
+                  self._setup_uart() must be called prior to calling this method.
+           @param args_dict A dict containing the elements of the http GET request.
+           @return The JSON string detailing success or failure."""
+        response_dict = self._get_return_dict(RestServer.UART_RX,
+                                             "{} is a malformed request to RX UART data.".format(args_dict[RestServer.GET_REQ]),
+                                             True)
+
+        try:
+            if 'uart' in args_dict:
+                uart = int(args_dict['uart'])
+                if uart in self._uartDict:
+                    uartInstance = self._uartDict[uart]
+                    rx_data = uartInstance.read()
+                    response_dict = self._get_return_dict(RestServer.UART_RX,
+                                                          rx_data,
+                                                          False)
+
+                else:
+                    raise Exception("Uart {} has not been setup.".format(uart))
+
+        except Exception as ex:
+            response_dict = self._get_return_dict(RestServer.UART_RX,
+                                                  "UART setup Error: {}".format(ex),
+                                                  True)
+
+        response = json.dumps(response_dict)
+        return response
 
 
 def unquote(string):
