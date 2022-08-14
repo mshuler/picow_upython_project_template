@@ -19,7 +19,9 @@ async def main():
     wifi = WiFi(uo, WIFI_SETUP_BUTTON_PIN)
     wifi.setup()
 
-    # start TCP web server using uasyncio
+    # Start a web server using uasyncio.
+    # This provides the WiFi setup interface and once the WiFi is setup
+    # the product.html file is served which may be customised as required for your project.
     # This can be customised for your project by changing the files in /webroot
     # and the GET/POST handling in basic_web_server.py
     basicWebServer = BasicWebServer(uo)
