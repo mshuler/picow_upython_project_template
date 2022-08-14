@@ -17,8 +17,6 @@ class WiFi(object):
     WIFI_CFG_FILE               = "/wifi.cfg"     # The config file to hold to WiFi configuration (E.G SSID, password etc).
     AP_CHANNEL                  = 3               # The WiFi channel used in setup mode.
 
-#PJA make Wifi Setup pin configurable
-
     @staticmethod
     def Get_Wifi_Networks():
         """@brief Get details of all the detectable WiFi networks.
