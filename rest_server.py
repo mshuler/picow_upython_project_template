@@ -478,6 +478,3 @@ def unquote(string):
             extend(item)
 
     return bytes(res)
-
-
-#
