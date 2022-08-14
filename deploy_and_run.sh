@@ -1,8 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 # Requires rshell is installed (pip install rshell)
 #
-# Requires a single argument. This is the USB port number.
-# E.G for /dev/ttyUSB0 you should pass an argument of 0.
+# Requires $1. This is the USB port number.
+# E.G for /dev/ttyACM0 you should pass an argument of 0.
+#
+# Optional $2. If pf then pyflakes is used to check the soruce files before they
+# are loaded onto the pico W. pyflakes must be installed  pip install pyflakes)
+# to use this option.
 #
 # This script copies all the files to the picow flash and then runs the main.py
 # program.
@@ -14,6 +18,16 @@ rm webroot/*~
 rshell --timing -p /dev/ttyACM$1 --buffer-size 512 rm -rf /pyboard/webroot
 # Remove all the python files from the picow flash
 rshell --timing -p /dev/ttyACM$1 --buffer-size 512 rm -rf /pyboard/*.py
+# Command that fail after this point stop the script running
+set -e
+if [[ "$*" == *"pf"* ]]
+then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!!! Checking python files using pyflakes !!!"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    pyflakes *.py
+fi
+
 # Create the /webroot folder in the picow flash.
 rshell --timing -p /dev/ttyACM$1 --buffer-size 512 mkdir webroot /pyboard/webroot
 # Copy all the html, css and javascript files into the /webroot folder on the picow flash.
