@@ -145,11 +145,11 @@ class RestServer(UOBase):
     def _read_adc(self, args_dict):
         """@brief Read the ADC value.
                    To read an ADC value
-                        http://192.168.0.24:8080/adc?adc=0
-                        http://192.168.0.24:8080/adc?adc=1
-                        http://192.168.0.24:8080/adc?adc=2
-                        http://192.168.0.24:8080/adc?adc=3
-                        http://192.168.0.24:8080/adc?adc=4
+                        http://<PICOW_ADDRESS>:8080/adc?adc=0
+                        http://<PICOW_ADDRESS>:8080/adc?adc=1
+                        http://<PICOW_ADDRESS>:8080/adc?adc=2
+                        http://<PICOW_ADDRESS>:8080/adc?adc=3
+                        http://<PICOW_ADDRESS>:8080/adc?adc=4
 
            @param args_dict A dict containing the elements of the http GET request.
            @return The JSON string containing the ADC value."""
@@ -177,7 +177,7 @@ class RestServer(UOBase):
     def _read_temp(self):
         """@brief Read the temperature of the picow using the on board temperature sensor.
            To read the picow temperature
-                http://192.168.0.24:8080/temperature
+                http://<PICOW_ADDRESS>:8080/temperature
            @return the JSON response detailing the temperature."""
         sensor_temp = machine.ADC(4)
         conversion_factor = 3.3 / (65535)
@@ -204,21 +204,21 @@ class RestServer(UOBase):
     def _setup_gpio(self, args_dict):
         """@brief Setup a GPIO pin.
            To setup a pin as an output and set its state
-                http://192.168.0.24:8080/set_gpio?pin=16?dir=out?value=1
+                http://<PICOW_ADDRESS>:8080/set_gpio?pin=16?dir=out?value=1
 
            To set the state of a pin previously setup as an output pin
-                http://192.168.0.24:8080/set_gpio?pin=16?value=0
+                http://<PICOW_ADDRESS>:8080/set_gpio?pin=16?value=0
 
            To setup a pin as an input and get its state
                 With internal pull up resistor
-                http://192.168.0.24:8080/set_gpio?pull=up?pin=22?dir=in
+                http://<PICOW_ADDRESS>:8080/set_gpio?pull=up?pin=22?dir=in
                 With internal pull down resistor
-                http://192.168.0.24:8080/set_gpio?pull=down?pin=22?dir=in
+                http://<PICOW_ADDRESS>:8080/set_gpio?pull=down?pin=22?dir=in
                 With no internal pull up/down resistor
-                http://192.168.0.24:8080/set_gpio?pin=22?dir=in
+                http://<PICOW_ADDRESS>:8080/set_gpio?pin=22?dir=in
 
            To get the state of a pin previously setup as an input pin
-                http://192.168.0.24:8080/set_gpio?pin=22
+                http://<PICOW_ADDRESS>:8080/set_gpio?pin=22
 
            @param args_dict A dict containing the elements of the http GET request.
 
@@ -301,10 +301,10 @@ class RestServer(UOBase):
     def _cpu_freq(self, args_dict):
         """@brief Get/Set the CPU frequency.
                    To read the CPU frequency
-                        http://192.168.0.24:8080/cpu_freq
+                        http://<PICOW_ADDRESS>:8080/cpu_freq
 
                     To Set the CPU frequency to 240 MHz (240 MHz is the max frequency)
-                        http://192.168.0.24:8080/cpu_freq?freq=240000000
+                        http://<PICOW_ADDRESS>:8080/cpu_freq?freq=240000000
 
            @param args_dict A dict containing the elements of the http GET request.
            @return The JSON string detailing success or failure."""
@@ -350,7 +350,7 @@ class RestServer(UOBase):
     def _setup_uart(self, args_dict):
         """@brief Setup a UART.
                    To setup a uart (8 data bits, 1 parity, 1 stop)
-                        http://192.168.0.24:8080/setup_uart?uart=0?tx_pin=0?rx_pin=1?baud=115200
+                        http://<PICOW_ADDRESS>:8080/setup_uart?uart=0?tx_pin=0?rx_pin=1?baud=115200
 
            @param args_dict A dict containing the elements of the http GET request.
            @return The JSON string detailing success or failure."""
@@ -391,7 +391,7 @@ class RestServer(UOBase):
     def _uart_tx(self, args_dict):
         """@brief TX data on a UART.
                    Send Hello World followed by carridge return, line feed
-                        http://192.168.0.24:8080/uart_tx?uart=0?tx_data=Hello%20World%d%a
+                        http://<PICOW_ADDRESS>:8080/uart_tx?uart=0?tx_data=Hello%20World%d%a
 
                   self._setup_uart() must be called prior to calling this method.
            @param args_dict A dict containing the elements of the http GET request.
@@ -428,7 +428,7 @@ class RestServer(UOBase):
     def _uart_rx(self, args_dict):
         """@brief Read data from a UART.
                    To read any data available on the UART
-                        http://192.168.0.24:8080/uart_rx?uart=0
+                        http://<PICOW_ADDRESS>:8080/uart_rx?uart=0
 
                   self._setup_uart() must be called prior to calling this method.
            @param args_dict A dict containing the elements of the http GET request.
@@ -483,10 +483,10 @@ class RestServer(UOBase):
     def _pwm(self, args_dict):
         """@brief Set a GPIO pin as a PWM output.
                    Set pin 16 as a PWM output with a 50% duty cycle
-                        http://192.168.0.24:8080/pwm?pin=16?freq=1000?duty_cycle=32767
+                        http://<PICOW_ADDRESS>:8080/pwm?pin=16?freq=1000?duty_cycle=32767
 
                    Set pin 16 to have a 50% duty cycle on a pin previously setup as a PWM output.
-                        http://192.168.0.24:8080/pwm?pin=16?freq=1000?duty_cycle=32767
+                        http://<PICOW_ADDRESS>:8080/pwm?pin=16?freq=1000?duty_cycle=32767
 
            @param args_dict A dict containing the elements of the http GET request.
            @return The JSON string detailing success or failure."""
