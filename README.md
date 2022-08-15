@@ -158,7 +158,7 @@ SERVICE_LIST             =WEB:80
 IP_ADDRESS               =192.168.1.78
 GROUP_NAME               =
 DEVICE_TYPE              =PICOW
-OS                       =NONE
+OS                       =micropython
 ```
 
 # Product web page
@@ -265,7 +265,7 @@ http://<PICOW_ADDRESS>:8080/set_gpio?pin=22
 {"/set_gpio": "1", "ERROR": false}
 ```
 
-# Get/Set The CPU Frequency
+## Get/Set The CPU Frequency
 The CPU frequency may be read and changed. The examples below show an initial read of the CPU frequency at the default speed, followed by setting the CPU frequency to its maximum speed and finally a read of the frequency set. The get/set value is in Hz.
 
 ```
@@ -279,7 +279,7 @@ http://<PICOW_ADDRESS>:8080/cpu_freq
 {"/cpu_freq": "240000000", "ERROR": false}
 ```
 
-# UART Access
+## UART Access
 The pico W has two uarts (0 and 1) and examples are provided to setup and TX/RX data from them.
 
 Initially the uart must be setup (uart 0, 8 data bits, 1 parity, 1 stop, 115200 bps).
@@ -301,4 +301,21 @@ To receive data available on the uart.
 ```
 http://<PICOW_ADDRESS>:8080/uart_rx?uart=0
 {"/uart_rx": "Hello World\r", "ERROR": false}
+```
+
+## PWM
+The following can be entered into a browser address bar to set GPIO pins as PWM outputs. The example responses are also shown.
+
+Set pin 16 as a PWM output to 1000 Hz with a 50% duty cycle. The duty_cycle can be set from 0 - 65535.
+
+```
+     http://<PICOW_ADDRESS>:8080/pwm?pin=16?freq=1000?duty_cycle=32767
+     {"/pwm": "", "ERROR": false}
+```
+
+To set the duty cycle on a PWM output that was previously setup to 50% duty cycle.
+
+```
+     http://<PICOW_ADDRESS>:8080/pwm?pin=16?duty_cycle=32767
+     {"/pwm": "", "ERROR": false}
 ```
