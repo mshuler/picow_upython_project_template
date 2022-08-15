@@ -19,11 +19,12 @@ class RestServer(UOBase):
     # HTTP GET request commands
     ADC_REQ = "/adc"                                         # The prefix in the HTTP request when reading the ADC.
     TEMPERATURE_REQ = "/temperature"                         # The text in the HTTP request when reading the picow temperature.
-    SETUP_GPIO_REQ = "/set_gpio"                           # The text in the HTTP request when seting a GPIO.
+    SETUP_GPIO_REQ = "/set_gpio"                             # The text in the HTTP request when seting a GPIO.
     CPU_FREQ = "/cpu_freq"                                   # The text in the http get request to set/get the CPU frequency.
     SETUP_UART = "/setup_uart"                               # The text in the HTTP request when setting up a UART.
     UART_TX = "/uart_tx"                                     # The text in the HTTP request when sending data out of a uart port.
     UART_RX = "/uart_rx"                                     # The text in the HTTP request when reading data from a uart port.
+    PWM = "/pwm"                                             # The text in the HTTP request when setting a GPIO pin as PWM.
 
     def __init__(self, uo=None):
         """@brief Constructor
@@ -32,6 +33,7 @@ class RestServer(UOBase):
         super().__init__(uo=uo)
         self._gpioDict = {}
         self._uartDict = {}
+        self._pwmDict = {}
 
     def startServer(self):
         asyncio.create_task(asyncio.start_server(self._serve_client, "0.0.0.0", RestServer.TCP_PORT))
@@ -90,6 +92,9 @@ class RestServer(UOBase):
 
             elif cmd == RestServer.UART_RX:
                 response = self._uart_rx(args_dict)
+
+            elif cmd == RestServer.PWM:
+                response = self._pwm(args_dict)
 
         # Send the HTTP OK header detailing JSON text to follow.
         self._ok_json_response(writer)
@@ -186,6 +191,16 @@ class RestServer(UOBase):
         response = json.dumps(response_dict)
         return response
 
+    def _is_valid_pin(self, pin):
+        """@brief Determine if a pin is a valid GPIO pin.
+           @param pin The GPIO pin number.
+           @return True if valid."""
+        valid = False
+        if pin >= 0 and pin <= 28:
+            valid = True
+
+        return valid
+
     def _setup_gpio(self, args_dict):
         """@brief Setup a GPIO pin.
            To setup a pin as an output and set its state
@@ -215,7 +230,7 @@ class RestServer(UOBase):
             try:
                 pin = int(args_dict["pin"])
                 # If this is a valid picow GPIO pin
-                if pin >= 0 and pin <= 28:
+                if self._is_valid_pin(pin):
                     value = None
                     # If value is defined in the request
                     if 'value' in args_dict:
@@ -438,6 +453,81 @@ class RestServer(UOBase):
         except Exception as ex:
             response_dict = self._get_return_dict(RestServer.UART_RX,
                                                   "UART setup Error: {}".format(ex),
+                                                  True)
+
+        response = json.dumps(response_dict)
+        return response
+
+    def _is_valid_pwm_hz(self, freq):
+        """@brief Determine a valid pwm freq.
+           @param freq The frequency in Hz.
+           @return True if valid."""
+        valid = False
+        # The doc (https://docs.micropython.org/en/v1.19.1/rp2/quickref.html#pins-and-gpio) says
+        # the min freq should be 7 Hz but 26 Hz seems to be the min.
+        if freq >= 26 and freq <= 125000000:
+            valid = True
+
+        return valid
+
+    def _is_valid_pwm_duty_cycle(self, value):
+        """@brief Determine a valid pwm duty cycle.
+           @param value The pwm duty cycle.
+           @return True if valid."""
+        valid = False
+        if value >= 0 and value <= 65535:
+            valid = True
+
+        return valid
+
+    def _pwm(self, args_dict):
+        """@brief Set a GPIO pin as a PWM output.
+                   Set pin 16 as a PWM output with a 50% duty cycle
+                        http://192.168.0.24:8080/pwm?pin=16?freq=1000?duty_cycle=32767
+
+                   Set pin 16 to have a 50% duty cycle on a pin previously setup as a PWM output.
+                        http://192.168.0.24:8080/pwm?pin=16?freq=1000?duty_cycle=32767
+
+           @param args_dict A dict containing the elements of the http GET request.
+           @return The JSON string detailing success or failure."""
+        response_dict = self._get_return_dict(RestServer.PWM,
+                                             "{} is a malformed request to set a PWM output.".format(args_dict[RestServer.GET_REQ]),
+                                             True)
+
+        try:
+            if 'pin' in args_dict:
+                pin = int(args_dict['pin'])
+                if self._is_valid_pin(pin):
+
+                    if 'duty_cycle' in args_dict:
+                        duty_cycle = int(args_dict['duty_cycle'])
+                        if self._is_valid_pwm_duty_cycle(duty_cycle):
+
+                            if 'freq' in args_dict:
+                                freq = int(args_dict['freq'])
+                                if self._is_valid_pwm_hz(freq):
+                                    # Setup the PWM pin
+                                    pwm = machine.PWM( machine.Pin(pin) )
+                                    self._pwmDict[pin]=pwm
+                                    pwm.freq(freq)
+                                    pwm.duty_u16(duty_cycle)
+                                    response_dict = self._get_return_dict(RestServer.PWM,
+                                                                          "",
+                                                                          False)
+
+                            else:
+                                # If we get here the PWM pin must have been setup previously as we only set the duty cycle
+                                if pin in self._pwmDict:
+                                    pwm = self._pwmDict[pin]
+                                    pwm.duty_u16(duty_cycle)
+                                    response_dict = self._get_return_dict(RestServer.PWM,
+                                                                      "",
+                                                                      False)
+
+        except Exception as ex:
+            raise
+            response_dict = self._get_return_dict(RestServer.PWM,
+                                                  "PWM setup Error: {}".format(ex),
                                                   True)
 
         response = json.dumps(response_dict)
