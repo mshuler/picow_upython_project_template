@@ -14,7 +14,7 @@ class YDevConfig(object):
         self.device_type   = 'PICOW'
         self.service_list  = "WEB:80"
         self.group_name    = ""
-        self.os            = "NONE"
+        self.os            = "micropython"
 
 class YDev(UOBase):
     """brief A Yview device implementation using micro python.
