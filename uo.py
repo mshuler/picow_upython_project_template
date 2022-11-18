@@ -36,7 +36,7 @@ class UO(object):
             print('{}{}'.format(prefix, msg))
 
 class UOBase(object):
-    """brief A base class for classes that use UO instances to send data to the user.
+    """@brief A base class for classes that use UO instances to send data to the user.
              This provides instance methods to send data to the user."""
 
     def __init__(self, uo=None):
